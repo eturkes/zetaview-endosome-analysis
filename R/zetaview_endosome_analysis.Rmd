@@ -1,0 +1,80 @@
+---
+title: "ZetaVIEW Endosome Analysis"
+author:
+  - name: "Emir Turkes [emir.turkes.19@ucl.ac.uk] and Lizzie Glennon [lizzie.glennon@ucl.ac.uk]"
+date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
+link-citations: true
+output:
+  html_document:
+    code_folding: hide
+    number_sections: true
+    theme: lumen
+    highlight: haddock
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(
+    inputFile,
+    encoding = encoding,
+    output_file = file.path("..", "results", "zetaview-endosome-analysis.html")
+  )})
+---
+
+<style type="text/css">
+body {font-size: 16px;}
+h1.title {font-size: 35px;}
+h1 {font-size: 24px;}
+h2 {font-size: 22px;}
+h3 {font-size: 20px;}
+.toc-content {padding-left: 0px; padding-right: 0px;}
+div.tocify {width: 100%;}
+.tocify-subheader .tocify-item {font-size: 0.95em; padding-left: 25px; text-indent: 0;}
+.tocify-subheader .tocify-subheader .tocify-item {
+  font-size: 0.95em; padding-left: 35px; text-indent: 0;
+}
+div.main-container {max-width: none; width: 100%;}
+</style>
+
+*This file is a part of [ZetaVIEW Endosome Analysis](https://github.com/eturkes/zetaview-endosome-analysis).*
+
+Analysis of endosome size using ZetaVIEW.
+
+R code used in each section can be expanded with the CODE button at the right.  
+Toggling the first CODE button at the start of the document enables showing and hiding of all code.
+
+```{r}
+# Load in necessary boilerplate and libraries.
+# --------------------------------------------
+
+# Copyright 2021 Emir Turkes, Lizzie Glennon
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+packages <- c("conflicted")
+invisible(suppressPackageStartupMessages(lapply(packages, library, character.only = TRUE)))
+
+knitr::opts_chunk$set(dpi = 300)
+# --------------------------------------------
+```
+
+# References
+
+This is the concluding section of the document.
+Here we output the `sessionInfo` and create a bibliography for works cited.
+
+```{r}
+sessionInfo()
+```
