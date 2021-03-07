@@ -63,11 +63,46 @@ Toggling the first CODE button at the start of the document enables showing and 
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-packages <- c("conflicted")
+packages <- c("conflicted", "RColorBrewer", "reshape2", "ggplot2")
 invisible(suppressPackageStartupMessages(lapply(packages, library, character.only = TRUE)))
+
+colors <- c(brewer.pal(9, "Blues")[c(2, 4, 6, 8)], brewer.pal(9, "Reds")[c(2, 4, 6, 8)])
 
 knitr::opts_chunk$set(dpi = 300)
 # --------------------------------------------
+```
+
+# Prep
+
+```{r}
+data <- read.delim(file.path("..", "assets", "size-by-number.tsv"))
+
+non_zero <- which(rowSums(data[ , -1]) > 0)
+data <- data[min(non_zero):max(non_zero), ]
+
+molten_data <- melt(data[ , -1], id.vars = NULL)
+colnames(molten_data) <- c("sample", "frequency")
+molten_data$size <- rep(data$size, ncol(data) - 1)
+```
+
+# Distribution Plots
+
+## Smoothed
+
+```{r}
+ggplot(molten_data, aes(size, frequency, color = sample)) +
+  geom_smooth(span = 0.1) +
+  scale_color_manual(values = colors) +
+  theme_light()
+```
+
+## Without Smoothing
+
+```{r}
+ggplot(molten_data, aes(size, frequency, color = sample)) +
+  geom_line() +
+  scale_color_manual(values = colors) +
+  theme_light()
 ```
 
 # References
