@@ -110,7 +110,7 @@ ggplot(molten_data, aes(size, frequency, color = sample)) +
 ## Poisson
 
 ```{r}
-model = glm(sample_522 ~ size, poisson, data)
+model <- glm(sample_522 ~ size, poisson, data)
 summary(model)
 ```
 
@@ -123,7 +123,7 @@ summary(model)
 ## Negative Binomial
 
 ```{r}
-model = glm.nb(sample_522 ~ size, data)
+model <- glm.nb(sample_522 ~ size, data)
 summary(model)
 ```
 
