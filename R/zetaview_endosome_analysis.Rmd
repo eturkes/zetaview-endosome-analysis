@@ -133,6 +133,25 @@ summary(model)
 1 - pchisq(summary(model)$deviance, summary(model)$df.residual)
 ```
 
+# Statistical Testing
+
+```{r}
+molten_data$group <- c(
+  rep("APOE3", times = nrow(molten_data) / 2), rep("APOE4", times = nrow(molten_data) / 2)
+)
+molten_data$sex <- rep(
+  c(rep("male", times = nrow(molten_data) / 4), rep("female", times = nrow(molten_data) / 4)),
+  times = 2
+)
+```
+
+## Negative Binomial GLM
+ 
+```{r}
+model <- glm.nb(frequency ~ group + sex + group:sex, molten_data)
+summary(model)
+```
+
 # References
 
 This is the concluding section of the document.
