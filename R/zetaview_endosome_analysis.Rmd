@@ -63,7 +63,7 @@ Toggling the first CODE button at the start of the document enables showing and 
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-packages <- c("conflicted", "RColorBrewer", "reshape2", "ggplot2", "MASS")
+packages <- c("conflicted", "RColorBrewer", "reshape2", "ggplot2", "MASS", "jtools")
 invisible(suppressPackageStartupMessages(lapply(packages, library, character.only = TRUE)))
 
 colors <- c(brewer.pal(9, "Blues")[c(2, 4, 6, 8)], brewer.pal(9, "Reds")[c(2, 4, 6, 8)])
@@ -141,6 +141,15 @@ summary(model)
 
 ```{r}
 1 - pchisq(summary(model)$deviance, summary(model)$df.residual)
+```
+
+### Further Results
+
+```{r}
+summ(model, robust = TRUE, model.fit = FALSE)
+effect_plot(model, pred = group, plot.points = TRUE, interval = TRUE)
+effect_plot(model, pred = sex, plot.points = TRUE, interval = TRUE)
+plot_summs(model)
 ```
 
 # References
