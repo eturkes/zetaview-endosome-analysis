@@ -49,24 +49,36 @@ Toggling the first CODE button at the start of the document enables showing and 
 # Load in necessary boilerplate and libraries.
 # --------------------------------------------
 
-# Copyright 2021 Emir Turkes, Lizzie Glennon
-# 
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-# 
-#     http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+#    This file is part of zetaview-endosome-analysis.
+#    Copyright (C) 2021  Emir Turkes, Lizzie Glennon, UK DRI at UCL
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#    Emir Turkes can be contacted at emir.turkes@eturkes.com
 
-packages <- c("conflicted", "RColorBrewer", "reshape2", "ggplot2", "MASS", "jtools")
+packages <- c(
+  "conflicted", "RColorBrewer", "reshape2", "ggplot2", "MASS", "multidplyr", "fitdistrplus",
+  "dplyr", "DT"
+)
 invisible(suppressPackageStartupMessages(lapply(packages, library, character.only = TRUE)))
+source("utils.R")
 
 colors <- c(brewer.pal(9, "Blues")[c(2, 4, 6, 8)], brewer.pal(9, "Reds")[c(2, 4, 6, 8)])
+
+cluster <- new_cluster(4)
+cluster_library(cluster, "fitdistrplus")
+cluster_assign(cluster, avg_finder = avg_finder)
 
 knitr::opts_chunk$set(dpi = 300)
 # --------------------------------------------
@@ -146,10 +158,18 @@ summary(model)
 ### Further Results
 
 ```{r}
-summ(model, robust = TRUE, model.fit = FALSE)
-effect_plot(model, pred = group, plot.points = TRUE, interval = TRUE)
-effect_plot(model, pred = sex, plot.points = TRUE, interval = TRUE)
-plot_summs(model)
+ranged_data <- molten_data[, -3]
+ranged_data$left <- molten_data$size - 1.5
+ranged_data$right <- molten_data$size + 1.5
+
+nb_data <- ranged_data %>%
+  group_by(sample) %>%
+  partition(cluster = cluster) %>%
+  do(neg_binomial_avg = avg_finder(.)) %>%
+  collect() %>%
+  mutate(neg_binomial_avg = unlist(neg_binomial_avg))
+
+datatable_download(nb_data)
 ```
 
 # References
