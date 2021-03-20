@@ -163,12 +163,13 @@ ranged_data$left <- molten_data$size - 1.5
 ranged_data$right <- molten_data$size + 1.5
 
 nb_data <- ranged_data %>%
-  group_by(sample) %>%
+  group_by(sample, group, sex) %>%
   partition(cluster = cluster) %>%
   do(neg_binomial_avg = avg_finder(.)) %>%
   collect() %>%
   mutate(neg_binomial_avg = unlist(neg_binomial_avg))
 
+nb_data <- nb_data[order(match(nb_data$sample, colnames(data[-1]))), ]
 datatable_download(nb_data)
 ```
 
