@@ -159,8 +159,8 @@ summary(model)
 
 ```{r}
 ranged_data <- molten_data[, -3]
-ranged_data$left <- molten_data$size - 1.5
-ranged_data$right <- molten_data$size + 1.5
+ranged_data$left <- molten_data$size - 2.5
+ranged_data$right <- molten_data$size + 2.5
 
 nb_data <- ranged_data %>%
   group_by(sample, group, sex) %>%
