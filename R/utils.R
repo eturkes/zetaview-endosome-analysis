@@ -42,7 +42,16 @@ datatable_download <- function(dt) {
 #' @param d a data frame or tibble with columns including left, right and freq
 #' @param keepdata passed through to fitdistcens
 #' @param ... extra variables to pass to fitdistcens eg starting values for the estimation process
-avg_finder <- function(d, keepdata = FALSE){
+nb_size <- function(d, keepdata = TRUE){
+  d_bin <- as.data.frame(d[rep(1:nrow(d), d$frequency), c("left", "right")])
+  fit <- fitdistrplus::fitdistcens(d_bin, "nbinom", keepdata = keepdata)
+  return(fit$estimate[["size"]])
+}
+
+#' @param d a data frame or tibble with columns including left, right and freq
+#' @param keepdata passed through to fitdistcens
+#' @param ... extra variables to pass to fitdistcens eg starting values for the estimation process
+nb_mu <- function(d, keepdata = TRUE){
   d_bin <- as.data.frame(d[rep(1:nrow(d), d$frequency), c("left", "right")])
   fit <- fitdistrplus::fitdistcens(d_bin, "nbinom", keepdata = keepdata)
   return(fit$estimate[["mu"]])

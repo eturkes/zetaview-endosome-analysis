@@ -76,10 +76,6 @@ source("utils.R")
 
 colors <- c(brewer.pal(9, "Blues")[c(2, 4, 6, 8)], brewer.pal(9, "Reds")[c(2, 4, 6, 8)])
 
-cluster <- new_cluster(4)
-cluster_library(cluster, "fitdistrplus")
-cluster_assign(cluster, avg_finder = avg_finder)
-
 knitr::opts_chunk$set(dpi = 300)
 # --------------------------------------------
 ```
@@ -162,14 +158,32 @@ ranged_data <- molten_data[, -3]
 ranged_data$left <- molten_data$size - 2.5
 ranged_data$right <- molten_data$size + 2.5
 
-nb_data <- ranged_data %>%
+cluster <- new_cluster(4)
+cluster_library(cluster, "fitdistrplus")
+cluster_assign(cluster, nb_size = nb_size)
+
+nb_size <- ranged_data %>%
   group_by(sample, group, sex) %>%
   partition(cluster = cluster) %>%
-  do(neg_binomial_avg = avg_finder(.)) %>%
+  do(neg_binomial_size = nb_size(.)) %>%
   collect() %>%
-  mutate(neg_binomial_avg = unlist(neg_binomial_avg))
+  mutate(neg_binomial_size = unlist(neg_binomial_size))
 
+cluster <- new_cluster(4)
+cluster_library(cluster, "fitdistrplus")
+cluster_assign(cluster, nb_mu = nb_mu)
+
+nb_mu <- ranged_data %>%
+  group_by(sample, group, sex) %>%
+  partition(cluster = cluster) %>%
+  do(neg_binomial_mean = nb_mu(.)) %>%
+  collect() %>%
+  mutate(neg_binomial_mean = unlist(neg_binomial_mean))
+
+nb_data <- nb_size
+nb_data$neg_binomial_mean <- nb_mu$neg_binomial_mean
 nb_data <- nb_data[order(match(nb_data$sample, colnames(data[-1]))), ]
+
 datatable_download(nb_data)
 ```
 
