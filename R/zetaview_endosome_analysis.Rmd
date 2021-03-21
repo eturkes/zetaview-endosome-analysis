@@ -69,9 +69,11 @@ Toggling the first CODE button at the start of the document enables showing and 
 
 packages <- c(
   "conflicted", "RColorBrewer", "reshape2", "ggplot2", "MASS", "multidplyr", "fitdistrplus",
-  "dplyr", "DT"
+  "dplyr", "DT", "jtools", "lme4", "interactions"
 )
 invisible(suppressPackageStartupMessages(lapply(packages, library, character.only = TRUE)))
+conflict_prefer("interact_plot", "interactions", quiet = TRUE)
+conflict_prefer("cat_plot", "interactions", quiet = TRUE)
 source("utils.R")
 
 colors <- c(brewer.pal(9, "Blues")[c(2, 4, 6, 8)], brewer.pal(9, "Reds")[c(2, 4, 6, 8)])
@@ -129,7 +131,6 @@ molten_data$sex <- rep(
 
 ```{r}
 model <- glm(frequency ~ group + sex + group:sex, poisson, molten_data)
-summary(model)
 ```
 
 ### Goodness-of-fit
@@ -142,7 +143,6 @@ summary(model)
 
 ```{r}
 model <- glm.nb(frequency ~ group + sex + group:sex, molten_data)
-summary(model)
 ```
 
 ### Goodness-of-fit
@@ -184,7 +184,99 @@ nb_data <- nb_size
 nb_data$neg_binomial_mean <- nb_mu$neg_binomial_mean
 nb_data <- nb_data[order(match(nb_data$sample, colnames(data[-1]))), ]
 
+endosomes_counted <- vector("list", length = length(unique(molten_data$sample)))
+for (i in seq_along(nb_data$sample)) {
+  subset <- molten_data[which(molten_data$sample == nb_data$sample[i]), ]
+  endosomes_counted[[i]] <- sum(subset$frequency)
+}
+nb_data$endosomes_counted <- unlist(endosomes_counted)
+
 datatable_download(nb_data)
+
+modeled_list <- vector("list", length = length(unique(molten_data$sample)))
+for (i in seq_along(nb_data$sample)) {
+  set.seed(1)
+  modeled_list[[i]] <-
+    rnbinom(
+      nb_data$endosomes_counted[i], size = nb_data$neg_binomial_size[i],
+      mu = nb_data$neg_binomial_mean[i]
+    )
+}
+modeled_data <- data.frame(data = unlist(modeled_list))
+
+for (i in seq_along(nb_data$sample)) {
+  modeled_list[[i]] <- rep(nb_data$sample[i], times = nb_data$endosomes_counted[i])
+}
+modeled_data$sample <- unlist(modeled_list)
+
+for (i in seq_along(nb_data$sample)) {
+  modeled_list[[i]] <- rep(nb_data$group[i], times = nb_data$endosomes_counted[i])
+}
+modeled_data$group <- unlist(modeled_list)
+
+for (i in seq_along(nb_data$sample)) {
+  modeled_list[[i]] <- rep(nb_data$sex[i], times = nb_data$endosomes_counted[i])
+}
+modeled_data$sex <- unlist(modeled_list)
+
+model <- glmer.nb(data ~ group + (1 | sample), modeled_data)
+summary(model)
+effect_plot(model, pred = group, plot.points = TRUE)
+
+model <- glmer.nb(data ~ sex + (1 | sample), modeled_data)
+summary(model)
+effect_plot(model, pred = sex, plot.points = TRUE)
+
+model <- glmer.nb(data ~ group * sex + (1 | sample), modeled_data)
+summary(model)
+cat_plot(model, pred = sex, modx = group, plot.points = TRUE, point.alpha = 0.2, point.size = 1)
+cat_plot(
+  model, pred = group, modx = sex, plot.points = TRUE,
+  geom = "line", point.alpha = 0.2, point.size = 1
+)
+
+effect_plot(model, pred = sample, plot.points = TRUE)
+
+wilcox <- wilcox.test(endosomes_counted ~ group, nb_data)
+wilcox
+boxplot(endosomes_counted ~ group, nb_data)
+
+wilcox <- wilcox.test(endosomes_counted ~ sex, nb_data)
+wilcox
+boxplot(endosomes_counted ~ sex, nb_data)
+
+ggplot(modeled_data, aes(data, color = sample)) +
+  geom_density() +
+  scale_color_manual(values = colors) +
+  theme_light()
+
+ggplot(modeled_data, aes(data, color = sample)) +
+  geom_histogram(position = "dodge" ) +
+  scale_color_manual(values = colors) +
+  scale_fill_manual(values = colors) +
+  guides(color = guide_legend(override.aes = list(fill = colors))) +
+  theme_light()
+
+ggplot(modeled_data, aes(data, color = sample)) +
+  geom_density() +
+  scale_color_manual(values = colors) +
+  theme_light()
+
+ggplot(modeled_data, aes(data, color = sample)) +
+  geom_histogram(fill = "white", position = "dodge" ) +
+  scale_color_manual(values = colors) +
+  guides(color = guide_legend(override.aes = list(fill = colors))) +
+  theme_light()
+
+ggplot(modeled_data[which(modeled_data$sex == "female"), ], aes(data, color = sample)) +
+  geom_density() +
+  scale_color_manual(values = colors[c(2, 3, 6, 7)]) +
+  theme_light()
+
+ggplot(modeled_data[which(modeled_data$sex == "female"), ], aes(data, color = sample)) +
+  geom_histogram(fill = "white", position = "dodge" ) +
+  scale_color_manual(values = colors[c(2, 3, 6, 7)]) +
+  theme_light()
 ```
 
 # References
