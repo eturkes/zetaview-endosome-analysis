@@ -251,21 +251,8 @@ ggplot(modeled_data, aes(data, color = sample)) +
   theme_light()
 
 ggplot(modeled_data, aes(data, color = sample)) +
-  geom_histogram(position = "dodge" ) +
-  scale_color_manual(values = colors) +
-  scale_fill_manual(values = colors) +
-  guides(color = guide_legend(override.aes = list(fill = colors))) +
-  theme_light()
-
-ggplot(modeled_data, aes(data, color = sample)) +
-  geom_density() +
-  scale_color_manual(values = colors) +
-  theme_light()
-
-ggplot(modeled_data, aes(data, color = sample)) +
   geom_histogram(fill = "white", position = "dodge" ) +
   scale_color_manual(values = colors) +
-  guides(color = guide_legend(override.aes = list(fill = colors))) +
   theme_light()
 
 ggplot(modeled_data[which(modeled_data$sex == "female"), ], aes(data, color = sample)) +
@@ -274,6 +261,37 @@ ggplot(modeled_data[which(modeled_data$sex == "female"), ], aes(data, color = sa
   theme_light()
 
 ggplot(modeled_data[which(modeled_data$sex == "female"), ], aes(data, color = sample)) +
+  geom_histogram(fill = "white", position = "dodge" ) +
+  scale_color_manual(values = colors[c(2, 3, 6, 7)]) +
+  theme_light()
+
+modeled_list <- vector("list", length = length(unique(molten_data$sample)))
+for (i in seq_along(nb_data$sample)) {
+  set.seed(1)
+  modeled_list[[i]] <-
+    rnbinom(
+      nrow(data), size = nb_data$neg_binomial_size[i],
+      mu = nb_data$neg_binomial_mean[i]
+    )
+}
+molten_data$modeled_data <- unlist(modeled_list)
+
+ggplot(molten_data, aes(modeled_data, color = sample)) +
+  geom_density() +
+  scale_color_manual(values = colors) +
+  theme_light()
+
+ggplot(molten_data, aes(modeled_data, color = sample)) +
+  geom_histogram(fill = "white", position = "dodge" ) +
+  scale_color_manual(values = colors) +
+  theme_light()
+
+ggplot(molten_data[which(molten_data$sex == "female"), ], aes(modeled_data, color = sample)) +
+  geom_density() +
+  scale_color_manual(values = colors[c(2, 3, 6, 7)]) +
+  theme_light()
+
+ggplot(molten_data[which(molten_data$sex == "female"), ], aes(modeled_data, color = sample)) +
   geom_histogram(fill = "white", position = "dodge" ) +
   scale_color_manual(values = colors[c(2, 3, 6, 7)]) +
   theme_light()
