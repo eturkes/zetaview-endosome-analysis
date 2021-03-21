@@ -250,9 +250,11 @@ ggplot(modeled_data, aes(data, color = sample)) +
   scale_color_manual(values = colors) +
   theme_light()
 
-ggplot(modeled_data, aes(data, color = sample)) +
-  geom_histogram(fill = "white", position = "dodge" ) +
+ggplot(modeled_data, aes(data, color = sample, fill = sample)) +
+  geom_histogram(position = "dodge") +
+  scale_fill_manual(values = colors) +
   scale_color_manual(values = colors) +
+  guides(color = guide_legend(override.aes = list(fill = colors))) +
   theme_light()
 
 ggplot(modeled_data[which(modeled_data$sex == "female"), ], aes(data, color = sample)) +
@@ -260,9 +262,14 @@ ggplot(modeled_data[which(modeled_data$sex == "female"), ], aes(data, color = sa
   scale_color_manual(values = colors[c(2, 3, 6, 7)]) +
   theme_light()
 
-ggplot(modeled_data[which(modeled_data$sex == "female"), ], aes(data, color = sample)) +
-  geom_histogram(fill = "white", position = "dodge" ) +
+ggplot(
+    modeled_data[which(modeled_data$sex == "female"), ],
+    aes(data, fill = sample, color = sample)
+  ) +
+  geom_histogram(position = "dodge") +
+  scale_fill_manual(values = colors[c(2, 3, 6, 7)]) +
   scale_color_manual(values = colors[c(2, 3, 6, 7)]) +
+  guides(color = guide_legend(override.aes = list(fill = colors[c(2, 3, 6, 7)]))) +
   theme_light()
 
 modeled_list <- vector("list", length = length(unique(molten_data$sample)))
@@ -281,9 +288,11 @@ ggplot(molten_data, aes(modeled_data, color = sample)) +
   scale_color_manual(values = colors) +
   theme_light()
 
-ggplot(molten_data, aes(modeled_data, color = sample)) +
-  geom_histogram(fill = "white", position = "dodge" ) +
+ggplot(molten_data, aes(modeled_data, color = sample, fill = sample)) +
+  geom_histogram(position = "dodge") +
+  scale_fill_manual(values = colors) +
   scale_color_manual(values = colors) +
+  guides(color = guide_legend(override.aes = list(fill = colors))) +
   theme_light()
 
 ggplot(molten_data[which(molten_data$sex == "female"), ], aes(modeled_data, color = sample)) +
@@ -291,9 +300,14 @@ ggplot(molten_data[which(molten_data$sex == "female"), ], aes(modeled_data, colo
   scale_color_manual(values = colors[c(2, 3, 6, 7)]) +
   theme_light()
 
-ggplot(molten_data[which(molten_data$sex == "female"), ], aes(modeled_data, color = sample)) +
-  geom_histogram(fill = "white", position = "dodge" ) +
+ggplot(
+    molten_data[which(molten_data$sex == "female"), ],
+    aes(modeled_data, fill = sample, color = sample)
+  ) +
+  geom_histogram(position = "dodge") +
+  scale_fill_manual(values = colors[c(2, 3, 6, 7)]) +
   scale_color_manual(values = colors[c(2, 3, 6, 7)]) +
+  guides(color = guide_legend(override.aes = list(fill = colors[c(2, 3, 6, 7)]))) +
   theme_light()
 ```
 
