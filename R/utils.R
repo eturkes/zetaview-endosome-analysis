@@ -1,5 +1,5 @@
 #    This file is part of zetaview-endosome-analysis.
-#    Copyright (C) 2021  Emir Turkes, Lizzie Glennon, UK DRI at UCL
+#    Copyright (C) 2021, 2023  Emir Turkes, Lizzie Glennon, UK DRI at UCL
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
